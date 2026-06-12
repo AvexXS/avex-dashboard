@@ -1,0 +1,44 @@
+{
+  "summary": "End-to-end testing of Avex Cloud completed. All 27 backend pytest tests pass (auth, plans, servers, tickets, billing/Stripe checkout, admin CRUD, settings). Frontend pages render correctly: landing, all marketing pages, signup→/dashboard redirect, login→/admin redirect, user dashboard server creation, ticket creation, billing, account; admin panel users/plans/tickets/invoices/settings all load. First-user-is-admin behavior verified (new signup creates role=user). Free-tier limit (1 server) enforced. Stripe checkout produces a valid session URL.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminOverview", "issue": "Stat cards for Users / Servers / Open tickets show '—' (empty) on first load while Revenue/sub-labels show 0 — indicates the /api/admin/stats response did not populate the top-level numeric fields in the browser. Backend endpoint itself returns correct data (verified by pytest). Likely a race condition where component renders before fetch resolves, or values being 0 are rendering but other code path. Worth verifying with a forced refresh + network tab.", "selector": "AdminOverview Stat", "priority": "MEDIUM"},
+      {"component": "Toast notification", "issue": "Post-signup success toast ('Account created. Check your email to verify.') visually overlaps the 'Get Help' button at the top right of the dashboard layout (z-index/positioning collision).", "selector": "toast / get-help button", "priority": "LOW"},
+      {"component": "<title>", "issue": "HTML document title is 'Emergent | Fullstack App' instead of 'Avex Cloud'. Update /app/frontend/public/index.html title and favicon.", "selector": "head>title", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Dashboard top bar", "issues": ["Toast notification overlaps 'Get Help' top-right action."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Investigate why AdminOverview shows '—' for Users/Servers/Open tickets stats while the backend endpoint returns correct values in pytest. Likely null-handling or fetch race in /app/frontend/src/pages/admin/AdminOverview.jsx.",
+    "Position toast container so it does not collide with the 'Get Help' button (z-index or top offset).",
+    "Update document <title> in /app/frontend/public/index.html to 'Avex Cloud' (currently 'Emergent | Fullstack App')."
+  ],
+  "critical_code_review_comments": [
+    "auth.py /register returns the user payload including `is_first_user` flag but does NOT strip `password_hash` — verified user model excludes it, but be cautious if model_dump ever includes extras.",
+    "servers.py free-tier limit logic: when user.role == 'admin' or 'staff', no limit. OK, but consider rate-limit safety.",
+    "billing.py: STRIPE_API_KEY falls back to 'sk_test_emergent' hardcoded default — acceptable given env is set, but consider failing fast if missing in production.",
+    "models.py User.email is EmailStr — good. Password hashing via bcrypt confirmed in auth_utils (verified via successful login round-trips).",
+    "All routes properly use `_id: 0` projection — no ObjectId leakage observed in any response."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py (new)"
+  ],
+  "success_rate": {"backend": "100% (27/27)", "frontend": "~90% (core flows pass, 3 minor UI issues)"},
+  "test_credentials": "Admin: firstadmin@avex.click / Admin12345! ; Dynamic test users created per run with prefix test_user_<runid>@avex.click / TestUser123!",
+  "seed_data_creation": "Per-run user 'test_user_<runid>@avex.click', server 'TEST_srv_<runid>', ticket 'TEST_ticket_<runid>', plan 'TEST_plan_<runid>' (deleted). Also a 'uitest_<runid>@avex.click' created during Playwright flow.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use BASE_URL https://avex-hosting.preview.emergentagent.com. Backend tests live at /app/backend/tests/backend_test.py and pass 27/27 in ~9s. Admin login firstadmin@avex.click / Admin12345!. The pytest suite is self-contained: it dynamically creates a new regular user each run so the 'first user becomes admin' invariant is not disturbed. Known UI issue: AdminOverview stat cards show '—' for Users/Servers/OpenTickets despite backend returning correct values — likely a frontend rendering issue (race condition or property mapping). Toast overlaps 'Get Help' button. Document title is still 'Emergent | Fullstack App'.",
+  "rca of the issue": "AdminOverview '—' issue RCA hypothesis: in /app/frontend/src/pages/admin/AdminOverview.jsx, Stat receives `value={stats?.users}`. When stats is null (initial render or fetch failure), value=undefined → renders '—'. Sub labels use `|| 0` so they show 0 even when stats null, masking the failure. Need to confirm whether /admin/stats request succeeded by inspecting browser Network tab; if 401, it's a cookie/session boundary issue when navigating directly to /admin right after login."
+}
