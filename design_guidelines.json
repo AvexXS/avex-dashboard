@@ -1,0 +1,123 @@
+{
+  "project_name": "avex",
+  "theme": {
+    "archetype": "Archetype 4: Swiss & High-Contrast",
+    "mode": "dark",
+    "description": "Opinionated visual minimalism. A black canvas with pure white typography, relying entirely on stark contrast, grid-based layouts, and negative space to convey premium performance. No decorative gradients, no unnecessary colors."
+  },
+  "colors": {
+    "background": "#000000",
+    "surface": "#0A0A0A",
+    "surface_secondary": "#111111",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "border_hover": "rgba(255, 255, 255, 0.25)",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#888888",
+    "text_muted": "#555555",
+    "accent": "#FFFFFF",
+    "accent_foreground": "#000000",
+    "semantic": {
+      "success": "#FFFFFF",
+      "danger": "#FFFFFF",
+      "warning": "#FFFFFF",
+      "info": "#FFFFFF"
+    },
+    "note": "Semantic colors are overridden to pure white to maintain the strict black-and-white aesthetic. Use icons (e.g., check, warning) and subtle opacity changes instead of colors to convey status."
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Outfit', sans-serif",
+      "body": "'Manrope', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "import_urls": [
+      "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap",
+      "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap",
+      "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+    ],
+    "scale": {
+      "h1": "text-5xl sm:text-6xl tracking-tighter font-light",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-medium",
+      "h3": "text-xl sm:text-2xl tracking-tight font-medium",
+      "body": "text-base leading-relaxed text-text_secondary",
+      "small": "text-sm tracking-wide text-text_muted uppercase",
+      "console": "text-sm font-mono text-text_primary leading-tight"
+    }
+  },
+  "spacing_and_layout": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_gap": "py-24 md:py-32",
+    "grid_bento": "grid grid-cols-1 md:grid-cols-12 gap-6",
+    "card_padding": "p-6 md:p-8",
+    "radius": "rounded-none",
+    "borders": "border border-border",
+    "note": "Strictly cardless or sharp-edged containers. No rounded corners (rounded-none). Generous padding."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-accent text-accent_foreground hover:bg-white/90 px-6 py-3 font-medium transition-colors rounded-none",
+      "secondary": "bg-transparent border border-border text-text_primary hover:bg-surface_secondary px-6 py-3 font-medium transition-colors rounded-none"
+    },
+    "inputs": "bg-transparent border-b border-border hover:border-border_hover focus:border-white focus:ring-0 px-0 py-3 rounded-none text-white outline-none transition-colors",
+    "cards": "bg-surface border border-border p-6 hover:border-border_hover transition-colors rounded-none",
+    "console_window": "bg-[#050505] border border-border p-4 font-mono text-sm text-text_secondary overflow-x-auto h-64 overflow-y-auto",
+    "table": "w-full text-left border-collapse",
+    "table_header": "border-b border-border py-4 text-text_muted font-medium text-sm uppercase tracking-wider",
+    "table_cell": "border-b border-border py-4 text-text_primary"
+  },
+  "motion": {
+    "transition": "transition-all duration-300 ease-in-out",
+    "hover_lift": "hover:-translate-y-1",
+    "framer_variants": {
+      "fadeIn": { "initial": { "opacity": 0, "y": 20 }, "animate": { "opacity": 1, "y": 0 }, "transition": { "duration": 0.6, "ease": [0.16, 1, 0.3, 1] } },
+      "stagger": { "animate": { "transition": { "staggerChildren": 0.1 } } }
+    }
+  },
+  "iconography": {
+    "library": "lucide-react",
+    "style": "stroke-width: 1.5, sharp lines, pure white or text_secondary"
+  },
+  "pages": {
+    "landing": {
+      "hero": {
+        "layout": "Centered, massive typography. 'High performance Servers & Designs at a low performance price'. Background is pure black with subtle digital noise texture.",
+        "ctas": "Row of 'Start for Free' (Primary) and 'Choose Premium Plans' (Secondary)."
+      },
+      "pricing": "Side-by-side sharp cards for Free and Premium hosting plans.",
+      "services": "Bento grid showcasing Video Editing and Website Design.",
+      "vps_enquiry": "A minimal form triggering a ticket creation.",
+      "legal": "Simple, text-heavy pages with generous left-aligned typography."
+    },
+    "dashboard_user": {
+      "layout": "Sidebar navigation (Servers, Tickets, Billing, Account). Main content area.",
+      "home": "List of servers (imitating Pterodactyl). Status indicated by a filled/unfilled circle icon.",
+      "server_detail": "Top stats row (CPU, RAM, Disk). Main area: Terminal console. Sidebar: File manager, Plugin downloader (Minecraft).",
+      "tickets": "Table of user tickets (Support, Design, Video Editing). 'Create Ticket' modal.",
+      "billing": "Invoices list (Paid/Unpaid), add payment methods."
+    },
+    "dashboard_admin": {
+      "layout": "Control-room aesthetic. Density is higher.",
+      "overview": "System-wide stats.",
+      "users": "Table to manage users, roles (staff, admin, engineer).",
+      "tickets": "Kanban or dense table to reply and manage service/support tickets.",
+      "settings": "Form to link Pterodactyl panel via API."
+    },
+    "auth": {
+      "layout": "Split screen: left side minimal form, right side abstract black-and-white texture."
+    }
+  },
+  "images": {
+    "hero_background": "https://images.unsplash.com/photo-1638376776402-9a4b75fe21bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMG1pbmltYWxpc3QlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwdGV4dHVyZXxlbnwwfHx8fDE3ODEyODUwNTB8MA&ixlib=rb-4.1.0&q=85",
+    "vps_section": "https://images.unsplash.com/photo-1670764522415-795d7146a932?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTN8MHwxfHNlYXJjaHwxfHxzZXJ2ZXIlMjByYWNrJTIwYmxhY2slMjBhbmQlMjB3aGl0ZXxlbnwwfHx8fDE3ODEyODUwNTB8MA&ixlib=rb-4.1.0&q=85"
+  },
+  "testing": {
+    "rule": "All interactive elements must include a data-testid attribute formatted as kebab-case and role-based."
+  },
+  "instructions_to_main_agent": [
+    "Strictly adhere to the black and white theme. Do not use gradients or saturated colors.",
+    "Use 'rounded-none' for all components to achieve a brutalist, sharp look.",
+    "Implement the landing page, user dashboard (Pterodactyl clone interface), admin panel, and auth flows as described.",
+    "Ensure the terminal console in the server view uses JetBrains Mono and mimics a real server output window.",
+    "Add 'data-testid' to all buttons, links, and forms."
+  ]
+}
