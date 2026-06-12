@@ -17,9 +17,9 @@ export default function AdminOverview() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border border-white/10">
-        <Stat icon={Users} label="Users" value={stats?.users} />
-        <Stat icon={Server} label="Servers" value={stats?.total_servers} sub={`${stats?.active_servers || 0} online`} />
-        <Stat icon={Ticket} label="Open tickets" value={stats?.open_tickets} sub={`${stats?.total_tickets || 0} total`} />
+        <Stat icon={Users} label="Users" value={stats?.users ?? 0} />
+        <Stat icon={Server} label="Servers" value={stats?.total_servers ?? 0} sub={`${stats?.active_servers || 0} online`} />
+        <Stat icon={Ticket} label="Open tickets" value={stats?.open_tickets ?? 0} sub={`${stats?.total_tickets || 0} total`} />
         <Stat icon={DollarSign} label="Revenue" value={`$${(stats?.total_revenue || 0).toFixed(0)}`} sub={`${stats?.paid_invoices || 0} paid`} />
       </div>
 

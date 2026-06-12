@@ -53,7 +53,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster position="top-right" richColors closeButton theme="dark" />
+        <Toaster position="bottom-right" richColors closeButton theme="dark" />
         <Routes>
           {/* Marketing */}
           <Route path="/" element={<Landing />} />
