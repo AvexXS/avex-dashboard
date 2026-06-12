@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from db import db
 from models import Invoice, CheckoutRequestIn, PaymentTransaction, Ticket, TicketMessage
 from auth_utils import get_current_user
+from routes.coupons import _resolve_discount
 
 from emergentintegrations.payments.stripe.checkout import (
     StripeCheckout, CheckoutSessionRequest,
@@ -104,6 +105,8 @@ async def checkout(payload: CheckoutRequestIn, request: Request, user=Depends(ge
             "intent": payload.intent,
             "details": payload.details or "",
             "subject": payload.subject or "",
+            "coupon_code": coupon_code or "",
+            "discount_percent": discount_percent,
         },
     )
     await db.payment_transactions.insert_one(txn.model_dump())

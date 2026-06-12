@@ -5,7 +5,10 @@ from fastapi import APIRouter, HTTPException, Depends
 
 from db import db
 from models import StaffCreateIn, UserRoleIn, PlatformSettings, PlatformSettingsIn, User
-from auth_utils import require_admin, hash_password
+from auth_utils import require_admin, require_role, hash_password
+
+require_admin_or_staff = require_role("admin", "staff", "engineer")
+require_admin_or_engineer = require_role("admin", "engineer")
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -104,7 +107,45 @@ async def mark_invoice_paid(invoice_id: str):
     return {"ok": True}
 
 
-@router.get("/servers", dependencies=[Depends(require_admin)])
+@router.get("/servers", dependencies=[Depends(require_admin_or_staff)])
 async def all_servers():
+    """List ALL servers across users. Visible to staff, engineer, admin."""
     docs = await db.servers.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    # Enrich with user emails for the admin view
+    user_ids = list({d["user_id"] for d in docs if d.get("user_id")})
+    if user_ids:
+        users = await db.users.find({"id": {"$in": user_ids}}, {"_id": 0, "id": 1, "email": 1, "name": 1, "tier": 1}).to_list(500)
+        user_map = {u["id"]: u for u in users}
+        for d in docs:
+            u = user_map.get(d.get("user_id"))
+            if u:
+                d["user_email"] = u.get("email")
+                d["user_name"] = u.get("name")
+                d["user_tier"] = u.get("tier", "free")
     return docs
+
+
+@router.delete("/servers/{server_id}", dependencies=[Depends(require_admin_or_engineer)])
+async def admin_delete_server(server_id: str, force: bool = False):
+    """Admin/engineer delete from admin view. Also removes from Pterodactyl."""
+    import pterodactyl_client as ptero
+    s = await db.servers.find_one({"id": server_id})
+    if not s:
+        raise HTTPException(status_code=404, detail="Server not found")
+    if s.get("pterodactyl_server_id"):
+        try:
+            await ptero.delete_panel_server(int(s["pterodactyl_server_id"]), force=force)
+        except Exception:
+            if not force:
+                raise
+    await db.servers.delete_one({"id": server_id})
+    return {"ok": True}
+
+
+@router.patch("/users/{user_id}/tier", dependencies=[Depends(require_admin)])
+async def set_user_tier(user_id: str, payload: dict):
+    tier = payload.get("tier")
+    if tier not in ("free", "premium"):
+        raise HTTPException(status_code=400, detail="tier must be 'free' or 'premium'")
+    await db.users.update_one({"id": user_id}, {"$set": {"tier": tier}})
+    return {"ok": True}

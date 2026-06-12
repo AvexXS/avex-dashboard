@@ -1,12 +1,16 @@
 import React from "react";
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, Layers, MessageSquare, FileText, Settings, LogOut, Globe } from "lucide-react";
+import { LayoutDashboard, Users, Layers, MessageSquare, FileText, Settings, LogOut, Globe, Tag, Server as ServerIcon, Shield, KeyRound } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const items = [
   { to: "/admin", end: true, icon: LayoutDashboard, label: "Overview" },
   { to: "/admin/users", icon: Users, label: "Users & Staff" },
+  { to: "/admin/servers", icon: ServerIcon, label: "Servers" },
+  { to: "/admin/policies", icon: KeyRound, label: "Access Policies" },
+  { to: "/admin/nodes", icon: Shield, label: "Infrastructure" },
   { to: "/admin/plans", icon: Layers, label: "Plans" },
+  { to: "/admin/coupons", icon: Tag, label: "Coupons" },
   { to: "/admin/tickets", icon: MessageSquare, label: "Tickets" },
   { to: "/admin/invoices", icon: FileText, label: "Invoices" },
   { to: "/admin/settings", icon: Settings, label: "Settings" },

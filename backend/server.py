@@ -23,6 +23,9 @@ from routes.billing import router as billing_router
 from routes.admin import router as admin_router
 from routes.public import router as public_router
 from routes.webhook import router as webhook_router
+from routes.coupons import router as coupons_router
+from routes.infra import router as infra_router
+from routes.policies import router as policies_router
 
 
 logging.basicConfig(
@@ -70,6 +73,9 @@ app.include_router(tickets_router)
 app.include_router(billing_router)
 app.include_router(admin_router)
 app.include_router(webhook_router)
+app.include_router(coupons_router)
+app.include_router(infra_router)
+app.include_router(policies_router)
 
 
 @app.get("/api/")

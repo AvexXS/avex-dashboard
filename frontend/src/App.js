@@ -31,6 +31,10 @@ import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminOverview from "@/pages/admin/AdminOverview";
 import AdminUsers from "@/pages/admin/AdminUsers";
 import AdminPlans from "@/pages/admin/AdminPlans";
+import AdminCoupons from "@/pages/admin/AdminCoupons";
+import AdminNodes from "@/pages/admin/AdminNodes";
+import AdminPolicies from "@/pages/admin/AdminPolicies";
+import AdminServers from "@/pages/admin/AdminServers";
 import AdminTickets from "@/pages/admin/AdminTickets";
 import AdminInvoices from "@/pages/admin/AdminInvoices";
 import AdminSettings from "@/pages/admin/AdminSettings";
@@ -99,7 +103,11 @@ export default function App() {
           >
             <Route index element={<AdminOverview />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="servers" element={<AdminServers />} />
             <Route path="plans" element={<AdminPlans />} />
+            <Route path="coupons" element={<AdminCoupons />} />
+            <Route path="nodes" element={<AdminNodes />} />
+            <Route path="policies" element={<AdminPolicies />} />
             <Route path="tickets" element={<AdminTickets />} />
             <Route path="invoices" element={<AdminInvoices />} />
             <Route path="settings" element={<AdminSettings />} />
