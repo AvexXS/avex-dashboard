@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreditCard, CheckCircle2, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
@@ -9,6 +9,7 @@ export default function Billing() {
   const [plans, setPlans] = useState([]);
   const [params, setParams] = useSearchParams();
   const [polling, setPolling] = useState(false);
+  const navigate = useNavigate();
 
   const fetchInvoices = () => api.get("/billing/invoices").then(({ data }) => setInvoices(data));
 
@@ -24,12 +25,17 @@ export default function Billing() {
         try {
           const { data } = await api.get(`/billing/checkout/status/${sessionId}`);
           if (data.payment_status === "paid") {
-            toast.success("Payment successful — invoice marked paid.");
             clearInterval(i);
             setPolling(false);
             params.delete("session_id");
             setParams(params, { replace: true });
             fetchInvoices();
+            if (data.intent === "design_order" && data.ticket_id) {
+              toast.success("Payment successful — your order ticket is open.");
+              navigate(`/dashboard/tickets/${data.ticket_id}`);
+            } else {
+              toast.success("Payment successful — invoice marked paid.");
+            }
           } else if (data.status === "expired" || attempts >= 6) {
             clearInterval(i);
             setPolling(false);

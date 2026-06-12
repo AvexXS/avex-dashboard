@@ -40,4 +40,9 @@ async def stripe_webhook(request: Request):
                     {"id": txn["invoice_id"]},
                     {"$set": {"status": "paid", "paid_at": datetime.now(timezone.utc).isoformat()}},
                 )
+                # Create design/video ticket if applicable
+                from routes.billing import _maybe_create_design_ticket
+                fresh = await db.payment_transactions.find_one({"session_id": event.session_id}, {"_id": 0})
+                if fresh:
+                    await _maybe_create_design_ticket(fresh)
     return {"received": True}

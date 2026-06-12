@@ -53,7 +53,7 @@ class Plan(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    category: Literal["hosting", "design", "video_editing", "vps"]
+    category: Literal["hosting", "website_hosting", "design", "video_editing", "vps"]
     price: float
     currency: str = "USD"
     cycle: Literal["monthly", "one_time"] = "monthly"
@@ -69,7 +69,7 @@ class Plan(BaseModel):
 
 class PlanIn(BaseModel):
     name: str
-    category: Literal["hosting", "design", "video_editing", "vps"]
+    category: Literal["hosting", "website_hosting", "design", "video_editing", "vps"]
     price: float
     currency: str = "USD"
     cycle: Literal["monthly", "one_time"] = "monthly"
@@ -178,6 +178,9 @@ class Invoice(BaseModel):
 class CheckoutRequestIn(BaseModel):
     plan_id: str
     origin_url: str
+    intent: Literal["plan_upgrade", "design_order"] = "plan_upgrade"
+    details: Optional[str] = None
+    subject: Optional[str] = None
 
 
 class PaymentTransaction(BaseModel):

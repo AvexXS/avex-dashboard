@@ -3,7 +3,14 @@ import { Plus, Trash2, Edit2, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 
-const CATEGORIES = ["hosting", "design", "video_editing", "vps"];
+const CATEGORIES = ["hosting", "website_hosting", "design", "video_editing", "vps"];
+const CATEGORY_LABEL = {
+  hosting: "Game Server Hosting",
+  website_hosting: "Website Hosting (Soon)",
+  design: "Website Design",
+  video_editing: "Video Editing",
+  vps: "VPS / Dedicated",
+};
 const CYCLES = ["monthly", "one_time"];
 
 const emptyPlan = {
@@ -15,6 +22,7 @@ export default function AdminPlans() {
   const [plans, setPlans] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(emptyPlan);
+  const [filter, setFilter] = useState("");
 
   const fetchAll = () => api.get("/plans/admin/all").then(({ data }) => setPlans(data));
   useEffect(() => { fetchAll(); }, []);
@@ -24,7 +32,10 @@ export default function AdminPlans() {
     setDraft({ ...p });
   };
   const cancel = () => { setEditingId(null); setDraft(emptyPlan); };
-  const startCreate = () => { setEditingId("new"); setDraft(emptyPlan); };
+  const startCreate = (category) => {
+    setEditingId("new");
+    setDraft({ ...emptyPlan, category: category || filter || "hosting" });
+  };
 
   const save = async () => {
     try {
@@ -52,14 +63,30 @@ export default function AdminPlans() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <div className="text-xs uppercase tracking-[0.3em] text-white/40">/ Admin / Plans</div>
           <h1 className="font-display text-4xl md:text-5xl font-light tracking-tighter mt-3">Plans &amp; pricing</h1>
+          <p className="mt-2 text-white/50 text-sm max-w-xl">Create plans per category — Game Server Hosting, Website Hosting, Design, Video Editing, or VPS.</p>
         </div>
-        <button onClick={startCreate} data-testid="admin-plan-new-btn" className="bg-white text-black px-6 py-3 text-sm uppercase tracking-wider font-medium hover:bg-white/90 inline-flex items-center gap-2">
+        <button onClick={() => startCreate()} data-testid="admin-plan-new-btn" className="bg-white text-black px-6 py-3 text-sm uppercase tracking-wider font-medium hover:bg-white/90 inline-flex items-center gap-2">
           <Plus className="w-4 h-4" /> New plan
         </button>
+      </div>
+
+      {/* Category tabs */}
+      <div className="border-b border-white/10 flex flex-wrap gap-2">
+        <CategoryTab active={filter === ""} onClick={() => setFilter("")} count={plans.length} label="All" testid="plan-tab-all" />
+        {CATEGORIES.map((c) => (
+          <CategoryTab
+            key={c}
+            active={filter === c}
+            onClick={() => setFilter(c)}
+            count={plans.filter((p) => p.category === c).length}
+            label={CATEGORY_LABEL[c]}
+            testid={`plan-tab-${c}`}
+          />
+        ))}
       </div>
 
       {editingId && (
@@ -109,10 +136,10 @@ export default function AdminPlans() {
             </tr>
           </thead>
           <tbody>
-            {plans.map((p) => (
+            {(filter ? plans.filter((p) => p.category === filter) : plans).map((p) => (
               <tr key={p.id} className="border-b border-white/5" data-testid={`plan-row-${p.id}`}>
                 <td className="px-6 py-4">{p.name}</td>
-                <td className="px-6 py-4 text-sm text-white/60 capitalize">{p.category.replace("_", " ")}</td>
+                <td className="px-6 py-4 text-sm text-white/60">{CATEGORY_LABEL[p.category] || p.category}</td>
                 <td className="px-6 py-4 font-mono">{p.currency} {p.price.toFixed(2)} <span className="text-white/40">/{p.cycle === "monthly" ? "mo" : "once"}</span></td>
                 <td className="px-6 py-4 text-sm font-mono text-white/60">{p.ram_gb || 0}GB · {p.cpu_cores || 0}c · {p.storage_gb || 0}GB</td>
                 <td className="px-6 py-4 text-xs uppercase tracking-wider">{p.active ? "Active" : "Inactive"} {p.is_free ? "· Free" : ""}</td>
@@ -142,9 +169,26 @@ function SelectField({ label, value, options, onChange }) {
     <div>
       <label className="text-xs uppercase tracking-widest text-white/40">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full bg-transparent border-b border-white/20 focus:border-white py-2 outline-none">
-        {options.map((o) => <option key={o} value={o} className="bg-black">{o.replace("_", " ")}</option>)}
+        {options.map((o) => (
+          <option key={o} value={o} className="bg-black">{CATEGORY_LABEL[o] || o.replace("_", " ")}</option>
+        ))}
       </select>
     </div>
+  );
+}
+
+function CategoryTab({ active, onClick, count, label, testid }) {
+  return (
+    <button
+      onClick={onClick}
+      data-testid={testid}
+      className={`px-4 py-3 text-xs uppercase tracking-wider border-b-2 -mb-px transition-colors inline-flex items-center gap-2 ${
+        active ? "border-white text-white" : "border-transparent text-white/50 hover:text-white"
+      }`}
+    >
+      {label}
+      <span className={`text-[10px] font-mono px-1.5 py-0.5 ${active ? "bg-white text-black" : "bg-white/10 text-white/60"}`}>{count}</span>
+    </button>
   );
 }
 function Toggle({ label, value, onChange }) {
